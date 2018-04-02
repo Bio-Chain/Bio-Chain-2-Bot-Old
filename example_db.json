@@ -1,0 +1,1 @@
+{"420": {"username": "test_head", "bio": ["test_user"], "links_to": ["69"]}, "69": {"username": "test_user", "bio": ["test_user2"], "links_to": ["42"]}, "42": {"username": "test_user2", "bio": ["end_user"], "links_to": ["8888"]}, "8888": {"username": "end_user", "bio": ["bio_chain"]}, "666": {"username": "literally_satan"}}
