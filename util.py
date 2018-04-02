@@ -1,6 +1,7 @@
 import time
 from file_string import FileString
 
+ADMIN = "millicow"
 TOKEN = ""
 END_NODE = '16507419'
 CHAT_ID = -1001180504638

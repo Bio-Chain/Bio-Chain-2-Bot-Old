@@ -27,7 +27,7 @@ class User:
             setattr(self, key, data.get(key, default_val))
 
     def __str__(self):
-        #todo: handle blank username better
+        #TODO: handle blank username better
         return '@' + self.username if self.username else "id:" + self.id
 
     def get_mention(self):

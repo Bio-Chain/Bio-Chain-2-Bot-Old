@@ -1,7 +1,7 @@
 import os
 import traceback
 import datetime
-from telegram.ext import Updater, MessageHandler, Filters
+from telegram.ext import Updater, MessageHandler, Filters, CommandHandler
 from signal import signal, SIGINT, SIGTERM, SIGABRT
 import logging
 
@@ -25,16 +25,15 @@ def update_chain(bot, chain_text):
         return False
 
     if len(chain_text) >= 3000:
-        send_message(bot, '@KateWasTaken Warning: The chain is approaching message character limit ({:.1%})'.format(
-            len(chain_text) / 4096
-        ))
+        send_message(bot, "@"+ADMIN+" Warning: The chain is approaching message character limit (" + str(len(chain_text) / 4096) + ")"
+        )
 
     try:
         # try to edit our last pinned message
         bot.editMessageText(
             chat_id=CHAT_ID,
             message_id=LAST_PIN.get(),
-            text=chain_text
+            text="`"+chain_text+"`"
         )
     except:
         # can't edit? send a placeholder and then edit it to prevent notifications
@@ -43,7 +42,7 @@ def update_chain(bot, chain_text):
             bot.editMessageText(
                 chat_id=CHAT_ID,
                 message_id=message.message_id,
-                text=chain_text
+                text="`"+chain_text+"`"
             )
             bot.pinChatMessage(
                 chat_id=CHAT_ID,
@@ -51,9 +50,9 @@ def update_chain(bot, chain_text):
                 disable_notification=True
             )
 
-            LAST_PIN.set(message.message_id)
+            LAST_PIN.set(str(message.message_id))
 
-    LAST_CHAIN.set(chain_text)
+    LAST_CHAIN.set(str(chain_text))
 
     return True
 
@@ -68,7 +67,7 @@ def send_message(bot, text, chat_id=CHAT_ID, *args, **kwargs):
     return bot.sendMessage(
         chat_id=chat_id,
         text=text,
-        parse_mode='HTML',
+        parse_mode='markdown',
         *args,
         **kwargs
     )
@@ -132,7 +131,9 @@ def main():
         else:
             exit(1)
 
-
+    def sandwich(bot, update):
+        bot.send_message(chat_id=update.message.chat_id, text="Not my job!")
+        
     def on_command(bot, update):
         message = update.message
 
@@ -147,7 +148,10 @@ def main():
             return
 
         try:
-            getattr(commands, 'cmd_' + command[0].lower())(db, update, directed, command_args)
+            if (command[0] == "sandwich"):
+                sandwich(bot, update)
+            else:
+                getattr(commands, 'cmd_' + command[0].lower())(db, update, directed, command_args)
         except AttributeError:
             if directed:
                 print('got unknown command:', message.text)
@@ -166,7 +170,7 @@ def main():
                 bot, 
                 (
                     'Welcome, {}!\n'
-                    '<a href="https://t.me/GBReborn_bot?start=-1001145055784_rules">Read the rules</a>\n\n'
+                    '<a href="https://t.me/Bio_Chain_2_Rules">Read the rules</a>\n\n'
                     'Who did you start at?\n\n'
                     '(to join the chain, simply add <code>{}</code> to your bio)'
                 ).format(
@@ -181,6 +185,7 @@ def main():
         left_id = str(update.message.left_chat_member.id)
         if left_id in db.users:
             db.users[left_id].username_fetch_failed = True
+            
 
     db = Database(DATABASE_FILENAME)
     db.update_best_chain(END_NODE)
